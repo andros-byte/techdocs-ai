@@ -2,49 +2,87 @@ import streamlit as st
 from openai import OpenAI
 from fpdf import FPDF
 
-# Підключаємо ключ та пароль із "Secrets"
+# --- CONFIGURATION ---
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
+PAYPAL_EMAIL = "np.kremenchuk.sb@gmail.com" 
 MASTER_CODE = st.secrets["ACCESS_CODE"]
-PAYPAL_EMAIL = "np.kremenchuk.sb@gmail.com"
 
-st.set_page_config(page_title="TechDocs AI Pro", page_icon="⚙️")
+st.set_page_config(page_title="TechDocs AI Pro", page_icon="⚙️", layout="wide")
 
-def create_pdf(text, query):
-    pdf = FPDF()
+class TechPDF(FPDF):
+    def header(self):
+        self.set_font('Arial', 'B', 12)
+        self.cell(0, 10, 'TECHDOCS AI - PROFESSIONAL ENGINEERING SERIES', 0, 1, 'R')
+        self.ln(5)
+
+    def footer(self):
+        self.set_y(-15)
+        self.set_font('Arial', 'I', 8)
+        self.cell(0, 10, f'Page {self.page_no()} | Confidential Technical Document', 0, 0, 'C')
+
+def create_pro_pdf(text, query):
+    pdf = TechPDF()
     pdf.add_page()
-    pdf.set_font("Arial", 'B', 16)
-    pdf.cell(200, 10, txt="TechDocs AI: Professional Manual", ln=True, align='C')
+    
+    # Title Block
+    pdf.set_fill_color(240, 240, 240)
+    pdf.set_font("Arial", 'B', 20)
+    pdf.cell(0, 20, txt=f"MANUAL: {query.upper()}", ln=True, align='L', fill=True)
     pdf.ln(10)
+    
+    # Content
     pdf.set_font("Arial", size=11)
     clean_text = text.encode('ascii', 'ignore').decode('ascii')
-    pdf.multi_cell(0, 7, txt=clean_text)
+    
+    for line in clean_text.split('\n'):
+        if line.startswith('#'): # Simple header detection
+            pdf.set_font("Arial", 'B', 14)
+            pdf.ln(5)
+            pdf.multi_cell(0, 10, txt=line.replace('#', '').strip())
+            pdf.set_font("Arial", size=11)
+        else:
+            pdf.multi_cell(0, 7, txt=line)
+            
     return pdf.output(dest='S').encode('latin-1')
 
+# --- UI INTERFACE ---
 st.title("⚙️ TechDocs AI Professional")
-query = st.text_input("Enter device model:")
+st.markdown("#### High-Fidelity Engineering Documentation Generator")
+
+query = st.text_input("Enter device model (e.g., Datouboss DN-022, Victron MultiPlus):")
 
 if query:
     if 'manual_content' not in st.session_state:
-        with st.spinner('Generating...'):
+        with st.spinner('Accessing engineering databases and generating...'):
+            prompt = f"Create a professional, highly detailed technical manual for {query}. Use tables for specifications, detailed connection steps, and safety warnings. Professional tone only."
             res = client.chat.completions.create(
                 model="gpt-4o",
-                messages=[{"role": "user", "content": f"Detailed manual for {query}"}]
+                messages=[{"role": "user", "content": prompt}]
             )
             st.session_state.manual_content = res.choices[0].message.content
 
     st.markdown("---")
-    st.info(st.session_state.manual_content[:300] + "...")
-    st.error("🔒 FULL PACKAGE IS LOCKED ($1.99)")
     
-    col1, col2 = st.columns(2)
-    with col1:
-        st.write("Send payment to:")
-        st.code(PAYPAL_EMAIL)
-    with col2:
+    # Preview Column
+    col_pre, col_pay = st.columns([2, 1])
+    
+    with col_pre:
+        st.subheader("📄 Document Preview")
+        st.info(st.session_state.manual_content[:500] + "...")
+        st.warning("⚠️ Full document contains diagrams, tables, and safety protocols.")
+
+    with col_pay:
+        st.subheader("🔓 Unlock Full PDF")
+        st.metric(label="Price", value="$1.99")
+        st.write(f"Pay to: `{PAYPAL_EMAIL}`")
+        
         user_code = st.text_input("Enter Access Code:", type="password")
         if user_code == MASTER_CODE:
-            st.success("Unlocked!")
-            pdf_data = create_pdf(st.session_state.manual_content, query)
-            st.download_button("📥 Download PDF", data=pdf_data, file_name="manual.pdf")
+            st.success("Access Granted")
+            pdf_data = create_pro_pdf(st.session_state.manual_content, query)
+            st.download_button("📥 DOWNLOAD PROFESSIONAL PDF", data=pdf_data, file_name=f"TechDocs_{query}.pdf")
+        elif user_code != "":
+            st.error("Invalid Code")
 
-st.sidebar.caption("Secured by PayPal")
+st.sidebar.markdown("### Support")
+st.sidebar.info("All manuals are generated using GPT-4o professional engineering model.")
