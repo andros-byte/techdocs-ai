@@ -1,7 +1,11 @@
-# google-site-verification: <meta name="google-site-verification" content="BmsbNUrS4gl2qA5tTqT3sexFNz51u0tx3AKMGGhgY_A" />
-# <meta name="google-site-verification" content="BmsbNUrS4gl2qA5tTqT3sexFNz51u0tx3AKMGGhgY_A" />
-
 import streamlit as st
+
+# --- GOOGLE VERIFICATION & CONFIG ---
+# Цей блок дозволяє Google побачити ваш сайт через "Тег HTML"
+st.set_page_config(page_title="TechDocs AI Pro", page_icon="⚙️", layout="wide")
+st.markdown('<meta name="google-site-verification" content="BmsbNUrS4gl2qA5tTqT3sexFNz51u0tx3AKMGGhgY_A" />', unsafe_allow_html=True)
+st.markdown('<p style="display:none">google-site-verification: google29d1211dcf00efa3.html</p>', unsafe_allow_html=True)
+
 from openai import OpenAI
 from fpdf import FPDF
 
@@ -9,8 +13,6 @@ from fpdf import FPDF
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 PAYPAL_EMAIL = "np.kremenchuk.sb@gmail.com"
 MASTER_CODE = st.secrets["ACCESS_CODE"]
-
-st.set_page_config(page_title="TechDocs AI Pro", page_icon="⚙️", layout="wide")
 
 class TechPDF(FPDF):
     def header(self):
