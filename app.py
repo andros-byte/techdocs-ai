@@ -1,44 +1,35 @@
 import streamlit as st
 from openai import OpenAI
-import base64
 
-# Налаштування сторінки
-st.set_page_config(page_title="TechDocs AI Pro", page_icon="📄")
+# Налаштування
+st.set_page_config(page_title="TechDocs AI Pro")
 
-# Клієнт OpenAI (Ключ має бути в Settings -> Secrets у Streamlit)
 try:
     client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 except:
-    st.error("Будь ласка, додайте OPENAI_API_KEY у Secrets вашого Streamlit додатку.")
+    st.error("Помилка: Перевірте OPENAI_API_KEY у Secrets!")
 
 st.title("📄 TechDocs AI Professional")
-st.subheader("Генератор технічних інструкцій")
 
-# Форма введення
-equipment = st.text_input("Модель обладнання (напр. EcoFlow, Must, Victron):")
-problem = st.text_area("Яке завдання потрібно виконати?")
+equipment = st.text_input("Модель обладнання (напр. Datouboss DN-022):")
+problem = st.text_area("Що саме потрібно (характеристики, налаштування)?")
 
-if st.button("Згенерувати документацію"):
-    if equipment and problem:
-        with st.spinner('ШІ генерує інструкцію...'):
+if st.button("Згенерувати інструкцію"):
+    if equipment:
+        with st.spinner('Генеруємо технічні дані...'):
             try:
                 response = client.chat.completions.create(
                     model="gpt-4o",
                     messages=[
-                        {"role": "system", "content": "Ти — професійний техписьменник. Створюй чіткі інструкції українською мовою."},
-                        {"role": "user", "content": f"Створи детальну інструкцію для {equipment}. Тема: {problem}."}
+                        {"role": "system", "content": "Ти — технічний експерт. НЕ давай порад про пошук у Google. Надавай конкретні технічні характеристики, схеми підключення, напругу, струм та покрокові налаштування для вказаної моделі. Якщо модель невідома, опиши типові параметри для цього класу пристроїв."},
+                        {"role": "user", "content": f"Надай повні технічні характеристики та інструкцію для {equipment}. Конкретне завдання: {problem}"}
                     ]
                 )
-                answer = response.choices[0].message.content
                 st.markdown("---")
-                st.markdown(answer)
-                st.success("✅ Готово!")
+                st.markdown(response.choices[0].message.content)
             except Exception as e:
                 st.error(f"Помилка: {e}")
-    else:
-        st.warning("Будь ласка, заповніть поля.")
 
-# Блок контактів
 st.divider()
-st.markdown("### 💳 Контакти та підтримка проекту")
+st.markdown("### 💳 Контакти та підтримка")
 st.write("**PayPal / Email:** np.kremenchuk.sb@gmail.com")
