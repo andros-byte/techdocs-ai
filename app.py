@@ -1,10 +1,13 @@
+# google-site-verification: <meta name="google-site-verification" content="BmsbNUrS4gl2qA5tTqT3sexFNz51u0tx3AKMGGhgY_A" />
+# <meta name="google-site-verification" content="BmsbNUrS4gl2qA5tTqT3sexFNz51u0tx3AKMGGhgY_A" />
+
 import streamlit as st
 from openai import OpenAI
 from fpdf import FPDF
 
 # --- CONFIGURATION ---
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
-PAYPAL_EMAIL = "np.kremenchuk.sb@gmail.com" 
+PAYPAL_EMAIL = "np.kremenchuk.sb@gmail.com"
 MASTER_CODE = st.secrets["ACCESS_CODE"]
 
 st.set_page_config(page_title="TechDocs AI Pro", page_icon="⚙️", layout="wide")
