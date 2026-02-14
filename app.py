@@ -1,19 +1,25 @@
 import streamlit as st
 
-# --- GOOGLE VERIFICATION & CONFIG ---
-# Цей блок дозволяє Google побачити ваш сайт через "Тег HTML"
+# --- CONFIGURATION & GOOGLE VERIFICATION ---
 st.set_page_config(page_title="TechDocs AI Pro", page_icon="⚙️", layout="wide")
+
+# Метод 1: Метатег для Google Search Console (Тег HTML)
 st.markdown('<meta name="google-site-verification" content="BmsbNUrS4gl2qA5tTqT3sexFNz51u0tx3AKMGGhgY_A" />', unsafe_allow_html=True)
+
+# Метод 2: Прихований текст для верифікації (HTML-файл)
 st.markdown('<p style="display:none">google-site-verification: google29d1211dcf00efa3.html</p>', unsafe_allow_html=True)
 
+# Імпорт бібліотек після конфігурації
 from openai import OpenAI
 from fpdf import FPDF
 
-# --- CONFIGURATION ---
+# --- API & ACCESS ---
+# Переконайтеся, що ці ключі додані в налаштування Streamlit (Secrets)
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 PAYPAL_EMAIL = "np.kremenchuk.sb@gmail.com"
 MASTER_CODE = st.secrets["ACCESS_CODE"]
 
+# --- PDF GENERATOR CLASS ---
 class TechPDF(FPDF):
     def header(self):
         self.set_font('Arial', 'B', 12)
@@ -35,12 +41,12 @@ def create_pro_pdf(text, query):
     pdf.cell(0, 20, txt=f"MANUAL: {query.upper()}", ln=True, align='L', fill=True)
     pdf.ln(10)
     
-    # Content
+    # Content formatting
     pdf.set_font("Arial", size=11)
     clean_text = text.encode('ascii', 'ignore').decode('ascii')
     
     for line in clean_text.split('\n'):
-        if line.startswith('#'): # Simple header detection
+        if line.startswith('#'):
             pdf.set_font("Arial", 'B', 14)
             pdf.ln(5)
             pdf.multi_cell(0, 10, txt=line.replace('#', '').strip())
@@ -50,7 +56,7 @@ def create_pro_pdf(text, query):
             
     return pdf.output(dest='S').encode('latin-1')
 
-# --- UI INTERFACE ---
+# --- MAIN INTERFACE ---
 st.title("⚙️ TechDocs AI Professional")
 st.markdown("#### High-Fidelity Engineering Documentation Generator")
 
@@ -68,7 +74,7 @@ if query:
 
     st.markdown("---")
     
-    # Preview Column
+    # Layout
     col_pre, col_pay = st.columns([2, 1])
     
     with col_pre:
