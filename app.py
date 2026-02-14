@@ -3,10 +3,22 @@ import streamlit.components.v1 as components
 from openai import OpenAI
 from fpdf import FPDF
 
-# --- 1. ПРИХОВАНА ВЕРИФІКАЦІЯ (ЦЕ НЕ БУДЕ ВИДНО НА ЕКРАНІ) ---
+# --- 1. ПРИХОВАНА ВЕРИФІКАЦІЯ ---
 st.set_page_config(page_title="TechDocs AI Pro", page_icon="⚙️", layout="wide")
 
-# Вставляємо коди так, щоб Google їх бачив, а користувач - ні
+# ЦЕЙ БЛОК Я ДОДАВ: він дублює верифікацію прямо в HTML, щоб Google її "з'їв"
+st.markdown(
+    """
+    <div style="display:none;">
+        <p>google-site-verification: google29d1211dcf00efa3.html</p>
+        <meta name="google-site-verification" content="BmsbNUrS4gl2qA5tTqT3sexFNz51u0tx3AKMGGhgY_A" />
+        <meta name="google-site-verification" content="MObJ6DkfeVQ8u1q8IQfCccX4lyAa3qAw" />
+    </div>
+    """, 
+    unsafe_allow_html=True
+)
+
+# Твоя вставка Analytics (залишаємо як є)
 components.html(
     """
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-QT8BPB0F44"></script>
@@ -22,7 +34,7 @@ components.html(
     height=0,
 )
 
-# --- 2. ЛОГІКА ДОДАТКА ---
+# --- 2. ЛОГІКА ДОДАТКА (ТВІЙ ОРИГІНАЛ) ---
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 PAYPAL_EMAIL = "np.kremenchuk.sb@gmail.com"
 MASTER_CODE = st.secrets["ACCESS_CODE"]
