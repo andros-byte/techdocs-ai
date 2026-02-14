@@ -1,20 +1,27 @@
 import streamlit as st
 
-# --- CONFIGURATION & GOOGLE VERIFICATION ---
+# --- GOOGLE ANALYTICS & VERIFICATION ---
+# Цей блок обов'язково має бути на самому початку
 st.set_page_config(page_title="TechDocs AI Pro", page_icon="⚙️", layout="wide")
 
-# Метод 1: Метатег для Google Search Console (Тег HTML)
-st.markdown('<meta name="google-site-verification" content="BmsbNUrS4gl2qA5tTqT3sexFNz51u0tx3AKMGGhgY_A" />', unsafe_allow_html=True)
+# Вставляємо ваш персональний код Google Analytics та метатег
+st.markdown("""
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-QT8BPB0F44"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-QT8BPB0F44');
+    </script>
+    <meta name="google-site-verification" content="BmsbNUrS4gl2qA5tTqT3sexFNz51u0tx3AKMGGhgY_A" />
+    <p style="display:none">google-site-verification: google29d1211dcf00efa3.html</p>
+""", unsafe_allow_html=True)
 
-# Метод 2: Прихований текст для верифікації (HTML-файл)
-st.markdown('<p style="display:none">google-site-verification: google29d1211dcf00efa3.html</p>', unsafe_allow_html=True)
-
-# Імпорт бібліотек після конфігурації
+# Імпорт решти бібліотек
 from openai import OpenAI
 from fpdf import FPDF
 
 # --- API & ACCESS ---
-# Переконайтеся, що ці ключі додані в налаштування Streamlit (Secrets)
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 PAYPAL_EMAIL = "np.kremenchuk.sb@gmail.com"
 MASTER_CODE = st.secrets["ACCESS_CODE"]
