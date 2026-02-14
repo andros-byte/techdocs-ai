@@ -1,32 +1,34 @@
 import streamlit as st
-
-# --- GOOGLE ANALYTICS & VERIFICATION ---
-# Цей блок обов'язково має бути на самому початку
-st.set_page_config(page_title="TechDocs AI Pro", page_icon="⚙️", layout="wide")
-
-# Вставляємо ваш персональний код Google Analytics та метатег
-st.markdown("""
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-QT8BPB0F44"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-QT8BPB0F44');
-    </script>
-    <meta name="google-site-verification" content="BmsbNUrS4gl2qA5tTqT3sexFNz51u0tx3AKMGGhgY_A" />
-    <p style="display:none">google-site-verification: google29d1211dcf00efa3.html</p>
-""", unsafe_allow_html=True)
-
-# Імпорт решти бібліотек
 from openai import OpenAI
 from fpdf import FPDF
 
-# --- API & ACCESS ---
+# --- 1. ВЕРИФІКАЦІЯ ТА АНАЛІТИКА (МАЄ БУТИ ПЕРШИМ) ---
+# Цей блок вирішує проблему "Не вдалося знайти сайт"
+st.set_page_config(page_title="TechDocs AI Pro", page_icon="⚙️", layout="wide")
+
+st.markdown("""
+    <head>
+        <meta name="google-site-verification" content="MObJ6DkfeVQ8u1q8IQfCccX4lyAa3qAw" />
+        
+        <meta name="google-site-verification" content="BmsbNUrS4gl2qA5tTqT3sexFNz51u0tx3AKMGGhgY_A" />
+        
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-QT8BPB0F44"></script>
+        <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-QT8BPB0F44');
+        </script>
+    </head>
+""", unsafe_allow_html=True)
+
+# --- 2. НАЛАШТУВАННЯ API ТА ДОСТУПУ ---
+# Переконайтеся, що OPENAI_API_KEY та ACCESS_CODE додані в Streamlit Secrets
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 PAYPAL_EMAIL = "np.kremenchuk.sb@gmail.com"
 MASTER_CODE = st.secrets["ACCESS_CODE"]
 
-# --- PDF GENERATOR CLASS ---
+# --- 3. ГЕНЕРАТОР PDF ---
 class TechPDF(FPDF):
     def header(self):
         self.set_font('Arial', 'B', 12)
@@ -50,6 +52,7 @@ def create_pro_pdf(text, query):
     
     # Content formatting
     pdf.set_font("Arial", size=11)
+    # Очищення тексту для PDF (латиниця)
     clean_text = text.encode('ascii', 'ignore').decode('ascii')
     
     for line in clean_text.split('\n'):
@@ -63,7 +66,7 @@ def create_pro_pdf(text, query):
             
     return pdf.output(dest='S').encode('latin-1')
 
-# --- MAIN INTERFACE ---
+# --- 4. ІНТЕРФЕЙС ДОДАТКА ---
 st.title("⚙️ TechDocs AI Professional")
 st.markdown("#### High-Fidelity Engineering Documentation Generator")
 
@@ -81,7 +84,7 @@ if query:
 
     st.markdown("---")
     
-    # Layout
+    # Стовпчики: Попередній перегляд та Оплата
     col_pre, col_pay = st.columns([2, 1])
     
     with col_pre:
