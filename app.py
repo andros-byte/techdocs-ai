@@ -8,24 +8,24 @@ st.set_page_config(page_title="AI Technical Guide", page_icon="🤖", layout="ce
 openai.api_key = "ТВІЙ_OPENAI_API_KEY" 
 MY_PAYPAL_EMAIL = "np.kremenchuk.sb@gmail.com"
 
-# --- СТИЛІЗАЦІЯ ЗЕЛЕНОЇ КНОПКИ ---
+# --- ПОКРАЩЕНА СТИЛІЗАЦІЯ ЗЕЛЕНОЇ КНОПКИ ---
 st.markdown("""
     <style>
-    div.stButton > button:first-child {
-        background-color: #28a745;
-        color: white;
-        font-size: 20px;
-        font-weight: bold;
-        border-radius: 8px;
-        border: none;
-        padding: 10px 20px;
-        width: 100%;
-        transition: 0.3s;
+    /* Шукаємо кнопку форми та застосовуємо стилі */
+    div[data-testid="stForm"] button {
+        background-color: #28a745 !important;
+        color: #000000 !important;
+        font-size: 22px !important;
+        font-weight: 900 !important; /* Максимальна жирність */
+        border-radius: 8px !important;
+        border: 2px solid #000000 !important;
+        padding: 15px !important;
+        width: 100% !important;
     }
-    div.stButton > button:first-child:hover {
-        background-color: #218838;
-        color: white;
-        border: none;
+    /* Ефект при наведенні */
+    div[data-testid="stForm"] button:hover {
+        background-color: #218838 !important;
+        color: #000000 !important;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -46,6 +46,7 @@ with st.form("technical_form"):
         height=150
     )
     
+    # Твоя вдосконалена фраза
     st.markdown(f"""
         <div style="background-color: #e8f0fe; padding: 20px; border-radius: 10px; border: 2px solid #0070ba; text-align: center; margin-top: 10px; margin-bottom: 10px;">
             <p style="font-size: 20px; font-weight: bold; color: #003087; margin: 0;">
@@ -54,7 +55,7 @@ with st.form("technical_form"):
         </div>
     """, unsafe_allow_html=True)
     
-    # Ця кнопка тепер жирна та зелена завдяки CSS вище
+    # Кнопка ЗАФІКСУВАТИ ЗАПИТ
     submit_button = st.form_submit_button("ЗАФІКСУВАТИ ЗАПИТ")
 
 # --- КРОК 2: ОПЛАТА ТА ШІ ---
@@ -64,13 +65,14 @@ if submit_button and user_query:
     st.info("Запит зафіксовано. Тепер ви можете здійснити оплату.")
     st.write("Вартість послуги: **$1.99**")
 
+    # Динамічне посилання для PayPal
     payment_url = (
         f"https://www.paypal.com/cgi-bin/webscr?cmd=_xclick"
         f"&business={MY_PAYPAL_EMAIL}"
         f"&item_name=Technical%20Recommendation&amount=1.99&currency_code=USD"
     )
 
-    # СОЛІДНА СИНЯ КНОПКА PAYPAL
+    # Солідна синя кнопка PayPal
     st.markdown(f'''
         <a href="{payment_url}" target="_blank" style="text-decoration: none;">
             <div style="
@@ -92,10 +94,8 @@ if submit_button and user_query:
     st.write("")
     st.write("---")
     
-    # Кнопка для ШІ (використовуємо інший ключ в CSS, щоб вона не була зеленою, 
-    # або залишаємо стандартною Streamlit для контрасту)
     if st.button("Отримати рекомендацію (я вже оплатив)"):
-        with st.spinner("Формуємо відповідь..."):
+        with st.spinner("Формуємо професійну інструкцію..."):
             try:
                 response = openai.ChatCompletion.create(
                     model="gpt-3.5-turbo",
@@ -112,7 +112,7 @@ if submit_button and user_query:
                 st.error(f"Помилка: {e}")
 
 elif not user_query and submit_button:
-    st.error("Будь ласка, введіть опис проблеми.")
+    st.error("Будь ласка, введіть опис проблеми перед фіксацією.")
 
 # 4. Футер
 st.markdown("---")
