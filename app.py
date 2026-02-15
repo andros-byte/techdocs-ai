@@ -1,44 +1,56 @@
 import streamlit as st
+import openai
 
-# Налаштування сторінки
-st.set_page_config(page_title="TechDocs Pro - Expert Inverter Solutions", layout="centered")
+# 1. Налаштування сторінки
+st.set_page_config(page_title="Technical Guide AI", page_icon="🤖")
 
-# Заголовок сайту
-st.title("🛠️ TechDocs Pro")
-st.subheader("Deep Troubleshooting & Optimization Manuals")
+# 2. Твої дані (OpenAI та PayPal)
+# Твій баланс OpenAI: $4.88
+openai.api_key = "ТВІЙ_OPENAI_API_KEY" 
+MY_PAYPAL_EMAIL = "np.kremenchuk.sb@gmail.com"
 
-st.write("---")
+# 3. Дизайн інтерфейсу
+st.title("🤖 AI Technical Guide Assistant")
+st.write("Отримайте професійну інструкцію всього за **$1.99**")
 
-# Опис послуги
-st.markdown("""
-### Get your professional technical guide
-Enter your inverter model and the error code or problem you are facing. 
-Our AI-expert system will generate a precise step-by-step solution for your specific case.
-""")
+# Створення прямого посилання на оплату (Plan B, оскільки бізнес-кнопки глючать)
+payment_url = f"https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business={MY_PAYPAL_EMAIL}&item_name=Technical%20Guide%20Access&amount=1.99&currency_code=USD"
 
-# Поле для введення запиту клієнта
-user_query = st.text_area("Describe your problem (e.g., Deye 15kW Error 05 or Battery BMS communication issue):")
+# 4. Логіка оплати та доступу
+if "payment_done" not in st.session_state:
+    st.session_state.payment_done = False
 
-st.write("---")
+if not st.session_state.payment_done:
+    st.info("Щоб скористатися ШІ-помічником, будь ласка, здійсніть оплату.")
+    
+    # Кнопка оплати
+    st.markdown(f'''
+        <a href="{payment_url}" target="_blank">
+            <div style="display: inline-block; padding: 0.5em 1em; color: white; background-color: #ffc439; border-radius: 5px; text-decoration: none; font-weight: bold; text-align: center; border: 1px solid #ffc439;">
+                <span style="color: #003087;">Pay with </span><span style="color: #009cde;">PayPal</span>
+            </div>
+        </a>
+    ''', unsafe_allow_html=True)
+    
+    st.write("---")
+    if st.button("Я вже оплатив (активувати доступ)"):
+        # Тут можна додати перевірку, але для старту просто активуємо
+        st.session_state.payment_done = True
+        st.rerun()
 
-# БЛОК ПРО ДОСТАВКУ (Delivery Info)
-st.info("""
-**🕒 Delivery & Quality Guarantee:**
-Standard delivery time is usually **15–20 minutes**. However, since every expert guide is processed manually to ensure technical accuracy, please allow **1 to 8 hours** for delivery, depending on time zone differences. We appreciate your patience in providing you with the most reliable solution.
-""")
-
-# Кнопка оплати (Заміни 'YOUR_PAYPAL_LINK' на своє реальне посилання з PayPal)
-paypal_url = "https://www.paypal.com/ncp/payment/YOUR_PAYPAL_CODE" # ТУТ ТВОЄ ПОСИЛАННЯ
-
-if st.button("🚀 Get Expert Guide for $1.99"):
-    if user_query:
-        st.success("Request received! Please proceed with the payment below.")
-        st.markdown(f'<a href="{paypal_url}" target="_blank" style="display: inline-block; padding: 12px 24px; background-color: #0070ba; color: white; text-align: center; text-decoration: none; font-size: 18px; border-radius: 4px;">Pay with PayPal</a>', unsafe_allow_html=True)
-        st.info("After payment, your manual will be sent to your PayPal email address.")
-    else:
-        st.warning("Please describe your problem first so we can prepare the right manual.")
-
-st.write("---")
-
-# Футер
-st.caption("© 2026 TechDocs Pro Services. Expert support for Solar & Inverter systems.")
+# 5. Робоча зона ШІ (відкривається після "оплати")
+if st.session_state.payment_done:
+    st.success("✅ Доступ активовано! Запитуйте ШІ.")
+    user_input = st.text_input("Опишіть вашу технічну проблему:")
+    
+    if user_input:
+        with st.spinner("ШІ думає..."):
+            try:
+                response = openai.ChatCompletion.create(
+                    model="gpt-3.5-turbo",
+                    messages=[{"role": "user", "content": user_input}]
+                )
+                st.write("### Відповідь ШІ:")
+                st.write(response.choices[0].message.content)
+            except Exception as e:
+                st.error(f"Помилка OpenAI: {e}")
