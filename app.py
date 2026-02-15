@@ -2,50 +2,47 @@ import streamlit as st
 import openai
 
 # 1. Налаштування сторінки
-st.set_page_config(
-    page_title="AI Technical Guide",
-    page_icon="🤖",
-    layout="centered"
-)
+st.set_page_config(page_title="AI Technical Guide", page_icon="🤖", layout="centered")
 
-# 2. Твої дані (OpenAI та PayPal)
-# Встав свій API ключ замість тексту нижче
+# 2. Твої дані (Screenshot_60, Screenshot_61)
 openai.api_key = "ТВІЙ_OPENAI_API_KEY" 
 MY_PAYPAL_EMAIL = "np.kremenchuk.sb@gmail.com"
 
-# 3. Головний інтерфейс
+# 3. Інтерфейс
 st.title("🤖 AI Technical Guide Assistant")
 st.subheader("Професійні технічні інструкції та рекомендації")
 
 # --- КРОК 1: ВВЕДЕННЯ ЗАПИТУ ---
 st.write("### 1. Опишіть вашу ситуацію")
 
-# Твій приклад про інвертор Deye (завжди в полі як placeholder)
+# Приклад, який завжди в полі (Screenshot_66)
 example_text = "Наприклад: Помилка F56 інвертора Deye 5кВт, як перевірити налаштування батареї або усунути несправність..."
 
-user_query = st.text_area(
-    "Введіть ваше технічне питання або проблему:", 
-    placeholder=example_text,
-    height=150
-)
-
-# --- КРОК 2: ОПЛАТА ТА ПІДКАЗКИ ---
-if user_query:
-    # Велика підказка про CTRL+ENTER (показується одразу, як клієнт почав писати)
+# Використовуємо st.form, щоб розділ 2 відкривався ТІЛЬКИ після натискання кнопки або Ctrl+Enter
+with st.form("technical_form"):
+    user_query = st.text_area(
+        "Введіть ваше технічне питання або проблему:", 
+        placeholder=example_text,
+        height=150
+    )
+    
+    # Велика підказка, як на Screenshot_69
     st.markdown("""
-        <div style="background-color: #e8f0fe; padding: 20px; border-radius: 10px; border: 2px solid #0070ba; text-align: center; margin-bottom: 20px;">
-            <p style="font-size: 24px; font-weight: bold; color: #003087; margin: 0;">
-                ⚠️ ЩОБ ПРОДОВЖИТИ, НАТИСНІТЬ <span style="color: #d93025;">CTRL + ENTER</span>
-            </p>
-            <p style="font-size: 16px; color: #5f6368; margin-top: 5px;">
-                Це зафіксує ваш запит і відкриє розділ оплати
+        <div style="background-color: #e8f0fe; padding: 15px; border-radius: 10px; border: 2px solid #0070ba; text-align: center;">
+            <p style="font-size: 22px; font-weight: bold; color: #003087; margin: 0;">
+                ⚠️ ЩОБ ВІДКРИТИ РОЗДІЛ ОПЛАТИ, НАТИСНІТЬ <span style="color: #d93025;">CTRL + ENTER</span>
             </p>
         </div>
     """, unsafe_allow_html=True)
+    
+    # Прихована кнопка для обробки форми
+    submit_button = st.form_submit_button("Зафіксувати запит")
 
+# --- КРОК 2: ОПЛАТА ТА ШІ (З'являються ТІЛЬКИ після натискання Ctrl+Enter) ---
+if submit_button and user_query:
     st.write("---")
     st.write("### 2. Отримайте професійну рекомендацію")
-    st.info("Для формування персональної відповіді на ваш запит, будь ласка, здійсніть оплату.")
+    st.info("Запит зафіксовано. Тепер ви можете здійснити оплату.")
     st.write("Вартість послуги: **$1.99**")
 
     # Формування посилання PayPal
@@ -58,7 +55,7 @@ if user_query:
         f"&currency_code=USD"
     )
 
-    # СОЛІДНА СИНЯ КНОПКА
+    # СОЛІДНА СИНЯ КНОПКА (Screenshot_69)
     st.markdown(f'''
         <a href="{payment_url}" target="_blank" style="text-decoration: none;">
             <div style="
@@ -78,16 +75,14 @@ if user_query:
     ''', unsafe_allow_html=True)
 
     st.write("")
-    st.write("---")
     
-    # Кнопка отримання відповіді (завжди видима, якщо є текст)
     if st.button("Отримати рекомендацію (я вже оплатив)"):
         with st.spinner("Формуємо професійну інструкцію..."):
             try:
                 response = openai.ChatCompletion.create(
                     model="gpt-3.5-turbo",
                     messages=[
-                        {"role": "system", "content": "Ти професійний технічний консультант. Відповідай мовою запиту."},
+                        {"role": "system", "content": "Ти професійний технічний консультант."},
                         {"role": "user", "content": user_query}
                     ]
                 )
@@ -97,10 +92,9 @@ if user_query:
                 st.balloons()
             except Exception as e:
                 st.error(f"Помилка: {e}")
-else:
-    # Підказка, коли поле ще порожнє (як на Screenshot_68)
+elif not user_query:
     st.info(f"💡 Підказка: {example_text}")
 
-# 4. Футер
+# 4. Футер (Screenshot_63)
 st.markdown("---")
 st.caption("© 2026 TechDocs Pro — Професійна технічна підтримка")
