@@ -1,58 +1,44 @@
 import streamlit as st
-from openai import OpenAI
 
-# 1. Налаштування сторінки та ідентифікація для пошуковиків
-st.set_page_config(
-    page_title="TechDocs AI | Technical Manual Generator",
-    page_icon="📄",
-    layout="centered"
-)
+# Налаштування сторінки
+st.set_page_config(page_title="TechDocs Pro - Expert Inverter Solutions", layout="centered")
 
-# Клієнт OpenAI (використовує ключ із твоїх Secrets)
-try:
-    client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
-except Exception:
-    st.error("API Key missing. Please check Streamlit Secrets.")
+# Заголовок сайту
+st.title("🛠️ TechDocs Pro")
+st.subheader("Deep Troubleshooting & Optimization Manuals")
 
-# 2. Головний інтерфейс
-st.title("📄 Professional Technical Documentation AI")
-st.write("Generate high-precision manuals, wiring diagrams, and error codes instantly.")
+st.write("---")
 
-# Поля для введення даних клієнтом
-equipment = st.text_input("Enter Device Model (e.g., Datouboss DN-022, Deye, Victron):")
-task = st.text_area("What do you need to configure? (e.g., Battery setup, CAN/RS485 communication)")
-
-if equipment and task:
-    st.markdown("---")
-    st.warning("🔒 **Professional Documentation Ready.**")
-    st.write("To unlock the full technical guide, please complete the secure payment.")
-
-    # 3. КНОПКА PAYPAL (Чітка та зрозуміла для іноземця)
-    # Пошта np.kremenchuk.sb@gmail.com автоматично підтягується як отримувач
-    paypal_url = f"https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=np.kremenchuk.sb@gmail.com&currency_code=USD&amount=1.99&item_name=Manual_for_{equipment}"
-    
-    st.markdown(f'''
-        <a href="{paypal_url}" target="_blank">
-            <button style="width:100%; height:70px; background-color: #0070ba; color: white; border: none; border-radius: 10px; font-size: 22px; font-weight: bold; cursor: pointer; box-shadow: 0px 4px 15px rgba(0,0,0,0.2);">
-                💳 PAY $1.99 VIA PAYPAL
-            </button>
-        </a>
-    ''', unsafe_allow_html=True)
-    
-    st.markdown("<p style='text-align: center; color: gray;'>Secure payment via PayPal (Credit Card supported)</p>", unsafe_allow_html=True)
-    
-    st.info("💡 **Next Step:** After payment, send a screenshot to **np.kremenchuk.sb@gmail.com**. You will receive your PDF manual via email immediately.")
-
-# 4. SEO БЛОК (Щоб сайт знаходили в Google)
-st.markdown("---")
-st.subheader("🛠️ Supported Brands & Expertise")
-st.write("""
-Our AI specialized in professional documentation for:
-* **Brands**: Datouboss, Deye, Bluetti, Victron Energy, Growatt, Must, Voltronic, PowMr, SRNE.
-* **Technical Topics**: Wiring diagrams, BMS protocols, CAN/RS485 setup, Error code troubleshooting.
+# Опис послуги
+st.markdown("""
+### Get your professional technical guide
+Enter your inverter model and the error code or problem you are facing. 
+Our AI-expert system will generate a precise step-by-step solution for your specific case.
 """)
 
-# 5. Футер (Перекладений)
-st.divider()
-st.caption("© 2026 TechDocs AI Global. Підтримка та оплата: np.kremenchuk.sb@gmail.com")
-st.caption("Your support helps a developer in Ukraine. 🇺🇦")
+# Поле для введення запиту клієнта
+user_query = st.text_area("Describe your problem (e.g., Deye 15kW Error 05 or Battery BMS communication issue):")
+
+st.write("---")
+
+# БЛОК ПРО ДОСТАВКУ (Delivery Info)
+st.info("""
+**🕒 Delivery & Quality Guarantee:**
+Standard delivery time is usually **15–20 minutes**. However, since every expert guide is processed manually to ensure technical accuracy, please allow **1 to 8 hours** for delivery, depending on time zone differences. We appreciate your patience in providing you with the most reliable solution.
+""")
+
+# Кнопка оплати (Заміни 'YOUR_PAYPAL_LINK' на своє реальне посилання з PayPal)
+paypal_url = "https://www.paypal.com/ncp/payment/YOUR_PAYPAL_CODE" # ТУТ ТВОЄ ПОСИЛАННЯ
+
+if st.button("🚀 Get Expert Guide for $1.99"):
+    if user_query:
+        st.success("Request received! Please proceed with the payment below.")
+        st.markdown(f'<a href="{paypal_url}" target="_blank" style="display: inline-block; padding: 12px 24px; background-color: #0070ba; color: white; text-align: center; text-decoration: none; font-size: 18px; border-radius: 4px;">Pay with PayPal</a>', unsafe_allow_html=True)
+        st.info("After payment, your manual will be sent to your PayPal email address.")
+    else:
+        st.warning("Please describe your problem first so we can prepare the right manual.")
+
+st.write("---")
+
+# Футер
+st.caption("© 2026 TechDocs Pro Services. Expert support for Solar & Inverter systems.")
